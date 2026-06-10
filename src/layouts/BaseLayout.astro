@@ -1,0 +1,142 @@
+---
+import "../styles/global.css";
+import { navItems, resumeLinks, siteName, socialLinks } from "../config/site";
+
+const { title = siteName } = Astro.props;
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <script is:inline>
+      const savedTheme = localStorage.getItem("theme");
+
+      if (savedTheme === "dark") {
+        document.documentElement.removeAttribute("data-theme");
+      } else {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">{siteName}</a>
+      <nav aria-label="Primary navigation">
+        {
+          navItems.map((item) => (
+            <a
+              class:list={[
+                "nav-link",
+                path === item.href || path.startsWith(`${item.href}/`) ? "active" : "",
+              ]}
+              href={item.href}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+        {
+          socialLinks.map((item) => (
+            <a
+              class="nav-link"
+              href={item.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={item.ariaLabel}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+        <details class="resume-menu" data-resume-menu>
+          <summary class="nav-link">resume</summary>
+          <div class="resume-options">
+            {
+              resumeLinks.map((item) => (
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={item.ariaLabel}
+                  title={item.title}
+                  data-resume-option
+                >
+                  {item.label}
+                </a>
+              ))
+            }
+          </div>
+        </details>
+        <button class="nav-link theme-toggle" type="button" data-theme-toggle>
+          dark
+        </button>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <slot />
+    </main>
+    <script is:inline>
+      const toggle = document.querySelector("[data-theme-toggle]");
+      const root = document.documentElement;
+
+      function setTheme(theme, shouldPulse = false) {
+        if (theme === "light") {
+          root.dataset.theme = "light";
+        } else {
+          root.removeAttribute("data-theme");
+        }
+
+        localStorage.setItem("theme", theme);
+        toggle.textContent = theme === "light" ? "dark" : "light";
+
+        if (shouldPulse) {
+          root.classList.remove("theme-pulse");
+          window.requestAnimationFrame(() => {
+            root.classList.add("theme-pulse");
+            window.setTimeout(() => root.classList.remove("theme-pulse"), 220);
+          });
+        }
+      }
+
+      setTheme(root.dataset.theme === "light" ? "light" : "dark");
+
+      toggle.addEventListener("click", () => {
+        setTheme(root.dataset.theme === "light" ? "dark" : "light", true);
+      });
+
+      const resumeMenu = document.querySelector("[data-resume-menu]");
+
+      function closeResumeMenu() {
+        if (resumeMenu instanceof HTMLDetailsElement) {
+          resumeMenu.open = false;
+        }
+      }
+
+      document.addEventListener("click", (event) => {
+        if (
+          resumeMenu instanceof HTMLDetailsElement &&
+          event.target instanceof Node &&
+          !resumeMenu.contains(event.target)
+        ) {
+          closeResumeMenu();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeResumeMenu();
+        }
+      });
+
+      document.querySelectorAll("nav > a, [data-resume-option], [data-theme-toggle]").forEach((item) => {
+        item.addEventListener("click", () => window.setTimeout(closeResumeMenu, 0));
+      });
+    </script>
+  </body>
+</html>

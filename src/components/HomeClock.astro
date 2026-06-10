@@ -1,0 +1,99 @@
+---
+import { clockTimeZone } from "../config/site";
+
+const romanNumerals = [
+  { label: "XII", hourIndex: 0 },
+  { label: "III", hourIndex: 3 },
+  { label: "VI", hourIndex: 6 },
+  { label: "IX", hourIndex: 9 },
+].map((mark) => {
+  const angle = (mark.hourIndex * 30 - 90) * (Math.PI / 180);
+  const radius = 142;
+
+  return {
+    label: mark.label,
+    x: 180 + Math.cos(angle) * radius,
+    y: 180 + Math.sin(angle) * radius,
+  };
+});
+---
+
+<div class="home-clock" data-time-zone={clockTimeZone}>
+  <svg viewBox="30 30 300 300" role="img" aria-label="Compass clock">
+    <rect x="30" y="30" width="300" height="300" fill="none"></rect>
+    <g class="clock-lines" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="180" cy="180" r="128" stroke-width="1.2" opacity="0.82"></circle>
+      <circle cx="180" cy="180" r="92" stroke-width="0.85" opacity="0.42"></circle>
+      <circle cx="180" cy="180" r="18" stroke-width="0.85" opacity="0.36"></circle>
+      <path class="clock-outer-guides" d="M180 32v296M32 180h296" stroke-width="0.85"></path>
+      <path d="M75 75l210 210M285 75L75 285" stroke-width="0.72" opacity="0.26"></path>
+      <path d="M180 55l19 125-19 125-19-125z" stroke-width="1.05" opacity="0.72"></path>
+      <path d="M180 52v18M180 290v18M52 180h18M290 180h18" stroke-width="1.2"></path>
+      <path d="M116 69l9 15M244 69l-9 15M116 291l9-15M244 291l-9-15" stroke-width="0.78" opacity="0.54"></path>
+    </g>
+    <g class="clock-hover-marks" aria-hidden="true">
+      {
+        romanNumerals.map((mark) => (
+          <text x={mark.x} y={mark.y}>{mark.label}</text>
+        ))
+      }
+    </g>
+    <g class="clock-hour-hand" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M180 180v-62" stroke-width="2.1"></path>
+    </g>
+    <g class="clock-minute-hand" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M180 180v-101" stroke-width="1.6"></path>
+      <path d="M180 79l5 13h-10z" stroke-width="1.1"></path>
+    </g>
+    <g class="clock-second-hand" fill="none" stroke="currentColor" stroke-linecap="round">
+      <path d="M180 185v-111" stroke-width="0.72" opacity="0.7"></path>
+    </g>
+    <g fill="currentColor">
+      <circle cx="180" cy="180" r="4"></circle>
+      <circle cx="180" cy="52" r="2.6"></circle>
+      <circle cx="180" cy="308" r="2.6"></circle>
+      <circle cx="52" cy="180" r="2.6"></circle>
+      <circle cx="308" cy="180" r="2.6"></circle>
+    </g>
+  </svg>
+</div>
+
+<script is:inline>
+  (() => {
+    const script = document.currentScript;
+    const clock = script?.previousElementSibling;
+
+    if (!(clock instanceof HTMLElement)) {
+      return;
+    }
+
+    function getParts(timeZone) {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: false,
+        timeZone,
+      }).formatToParts(new Date());
+
+      return Object.fromEntries(parts.map((part) => [part.type, Number(part.value)]));
+    }
+
+    function setClock() {
+      const timeZone = clock.dataset.timeZone || "America/Los_Angeles";
+      const { hour = 0, minute = 0, second = 0 } = getParts(timeZone);
+      const hour12 = hour % 12;
+
+      clock.style.setProperty("--hour-angle", `${hour12 * 30 + minute * 0.5}deg`);
+      clock.style.setProperty("--minute-angle", `${minute * 6}deg`);
+      clock.style.setProperty("--second-angle", `${second * 6}deg`);
+      clock.classList.add("is-ready");
+    }
+
+    setClock();
+    window.setInterval(setClock, 1000);
+
+    clock.addEventListener("pointerenter", () => clock.classList.add("is-hovering"));
+    clock.addEventListener("pointerleave", () => clock.classList.remove("is-hovering"));
+  })();
+</script>

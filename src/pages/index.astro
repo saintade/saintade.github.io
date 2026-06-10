@@ -1,0 +1,73 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HomeClock from "../components/HomeClock.astro";
+import { currentPlace, homePostLimit } from "../config/site";
+
+const dateFormatter = new Intl.DateTimeFormat("en", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const allPosts = await getCollection("blog");
+const recentPosts = [...allPosts]
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, homePostLimit);
+const hasRecentPosts = recentPosts.length > 0;
+const postSlug = (id: string) => id.replace(/\.md$/, "");
+---
+
+<BaseLayout title="Samuel Adesuyi">
+  <section class="home-layout" aria-label="Home">
+    <div class="home-copy">
+      <p>
+        hi, i’m sam. i’m studying computer science at george mason, where i’m
+        pursuing both a bachelor’s and a master’s.
+      </p>
+      <p>
+        i’m interested in systems-level programming, distributed systems, and
+        developer tools. most of my experience so far has been in ai systems
+        and backend infrastructure.
+      </p>
+      <p>
+        i’ve interned at
+        <a href="https://www.parsons.com/" target="_blank" rel="noreferrer">parsons</a>,
+        <a href="https://www.zscaler.com/" target="_blank" rel="noreferrer">zscaler</a>,
+        <a href="https://www.hubspot.com/" target="_blank" rel="noreferrer">hubspot</a>,
+        and
+        <a href="https://www.apple.com/" target="_blank" rel="noreferrer">apple</a>,
+        with upcoming work at
+        <a href="https://www.microsoft.com/" target="_blank" rel="noreferrer">microsoft</a>
+        and
+        <a href="https://aws.amazon.com/media-services/elemental/" target="_blank" rel="noreferrer">aws elemental</a>.
+      </p>
+      <p>
+        mostly, i like learning how things work underneath the surface and
+        building tools around that understanding.
+      </p>
+      <p class="wai">wai: {currentPlace.toLowerCase()}</p>
+    </div>
+    <div class="home-image-slot" aria-hidden="true">
+      <HomeClock />
+    </div>
+  </section>
+  {
+    hasRecentPosts && (
+      <section class="home-writing" aria-label="Recent writing">
+        <ul class="post-list">
+          {recentPosts.map((post) => (
+            <li>
+              <a href={`/blog/${postSlug(post.id)}`}>
+                <span>{post.data.title}</span>
+                <time datetime={post.data.date.toISOString()}>
+                  {dateFormatter.format(post.data.date)}
+                </time>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</BaseLayout>
