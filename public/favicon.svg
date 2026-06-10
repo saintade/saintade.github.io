@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="30 30 300 300">
+  <g
+    fill="none"
+    stroke="#c9c9c3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <circle cx="180" cy="180" r="128" stroke-width="10" opacity="0.94"/>
+    <circle cx="180" cy="180" r="92" stroke-width="6" opacity="0.44"/>
+    <path d="M75 75l210 210M285 75L75 285" stroke-width="5" opacity="0.34"/>
+    <path d="M180 55l19 125-19 125-19-125z" stroke-width="8" opacity="0.92"/>
+    <path d="M180 52v18M180 290v18M52 180h18M290 180h18" stroke-width="9"/>
+  </g>
+  <g fill="#c9c9c3">
+    <circle cx="180" cy="180" r="12"/>
+    <circle cx="180" cy="52" r="8"/>
+    <circle cx="180" cy="308" r="8"/>
+    <circle cx="52" cy="180" r="8"/>
+    <circle cx="308" cy="180" r="8"/>
+  </g>
+</svg>

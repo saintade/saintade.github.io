@@ -12,14 +12,18 @@ const path = Astro.url.pathname;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <link data-favicon rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     <script is:inline>
       const savedTheme = localStorage.getItem("theme");
+      const initialFavicon = document.querySelector("[data-favicon]");
 
       if (savedTheme === "dark") {
         document.documentElement.removeAttribute("data-theme");
+        initialFavicon?.setAttribute("href", "/favicon-gold.svg");
       } else {
         document.documentElement.dataset.theme = "light";
+        initialFavicon?.setAttribute("href", "/favicon.svg");
       }
     </script>
   </head>
@@ -84,12 +88,15 @@ const path = Astro.url.pathname;
     <script is:inline>
       const toggle = document.querySelector("[data-theme-toggle]");
       const root = document.documentElement;
+      const themeFavicon = document.querySelector("[data-favicon]");
 
       function setTheme(theme, shouldPulse = false) {
         if (theme === "light") {
           root.dataset.theme = "light";
+          themeFavicon?.setAttribute("href", "/favicon.svg");
         } else {
           root.removeAttribute("data-theme");
+          themeFavicon?.setAttribute("href", "/favicon-gold.svg");
         }
 
         localStorage.setItem("theme", theme);
