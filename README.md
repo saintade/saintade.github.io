@@ -1,14 +1,3 @@
-# Portfolio
-
-Small Astro portfolio for `samueladesuyi`.
-
-## Local
-
-```bash
-npm install
-npm run dev
-```
-
 ## Add A Blog Post
 
 Add one Markdown file in `src/content/blog`.
