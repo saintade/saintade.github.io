@@ -34,7 +34,7 @@ export const resumeLinks = [
 
 export const clockTimeZone = "America/Los_Angeles";
 export const homePostLimit = 4;
-export const currentPlace = "San Diego, CA";
+export const currentPlace = "Redmond, WA";
 
 // Common alternatives:
 // Seattle: "America/Los_Angeles"
